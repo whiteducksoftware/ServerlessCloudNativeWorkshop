@@ -1,0 +1,260 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each": {
+                "actions": {
+                    "Condition": {
+                        "actions": {
+                            "Send_email_(V4)": {
+                                "inputs": {
+                                    "body": {
+                                        "from": "[INSERT_YOUR_SENDER_MAIL_HERE]",
+                                        "ishtml": true,
+                                        "subject": "Temprature is to high!",
+                                        "text": "<p>Temperatur im @{body('Parse_WeatherData')['name']} is with @{body('Parse_WeatherData')['temperature']}@{body('Parse_WeatherData')['temperature']} C to high!</p>",
+                                        "to": "[INSERT_YOUR_RECEIVER_MAIL_HERE]"
+                                    },
+                                    "host": {
+                                        "connection": {
+                                            "name": "@parameters('$connections')['sendgrid']['connectionId']"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "path": "/v4/mail/send"
+                                },
+                                "runAfter": {},
+                                "type": "ApiConnection"
+                            }
+                        },
+                        "expression": {
+                            "and": [
+                                {
+                                    "greater": [
+                                        "@body('Parse_WeatherData')['temperature']",
+                                        28
+                                    ]
+                                }
+                            ]
+                        },
+                        "runAfter": {
+                            "Parse_WeatherData": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "If"
+                    },
+                    "Parse_WeatherData": {
+                        "inputs": {
+                            "content": "@items('For_each')",
+                            "schema": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "co2": {
+                                        "type": "integer"
+                                    },
+                                    "humidity": {
+                                        "type": "integer"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "temperature": {
+                                        "type": "number"
+                                    },
+                                    "time": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "time",
+                                    "temperature",
+                                    "co2",
+                                    "humidity"
+                                ],
+                                "type": "object"
+                            }
+                        },
+                        "runAfter": {},
+                        "type": "ParseJson"
+                    }
+                },
+                "foreach": "@body('Parse_Weather_Station_Result')['stationModules']",
+                "runAfter": {
+                    "Parse_Weather_Station_Result": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Foreach"
+            },
+            "Parse_Weather_Station_Result": {
+                "inputs": {
+                    "content": "@triggerBody()?['data']",
+                    "schema": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "dataType": {
+                                "items": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "stationModules": {
+                                "items": [
+                                    {
+                                        "properties": {
+                                            "co2": {
+                                                "type": "integer"
+                                            },
+                                            "humidity": {
+                                                "type": "integer"
+                                            },
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "temperature": {
+                                                "type": "number"
+                                            },
+                                            "time": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "time",
+                                            "temperature",
+                                            "co2",
+                                            "humidity"
+                                        ],
+                                        "type": "object"
+                                    },
+                                    {
+                                        "properties": {
+                                            "co2": {
+                                                "type": "integer"
+                                            },
+                                            "humidity": {
+                                                "type": "integer"
+                                            },
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "temperature": {
+                                                "type": "number"
+                                            },
+                                            "time": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "time",
+                                            "temperature",
+                                            "co2",
+                                            "humidity"
+                                        ],
+                                        "type": "object"
+                                    }
+                                ],
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name",
+                            "dataType",
+                            "stationModules"
+                        ],
+                        "type": "object"
+                    }
+                },
+                "runAfter": {},
+                "type": "ParseJson"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "When_a_resource_event_occurs": {
+                "inputs": {
+                    "body": {
+                        "properties": {
+                            "destination": {
+                                "endpointType": "webhook",
+                                "properties": {
+                                    "endpointUrl": "@{listCallbackUrl()}"
+                                }
+                            },
+                            "filter": {
+                                "includedEventTypes": [
+                                    "devopenspace.serverless.weather"
+                                ]
+                            },
+                            "topic": "/subscriptions/[INSERT_YOUR_SUBSCRIPTION_ID]/resourceGroups/[INSERT_YOUR_RESOURCE_GROUP_NAME]/providers/Microsoft.EventGrid/topics/[INSERT_YOUR_EVENT_GRID_NAME]"
+                        }
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['azureeventgrid']['connectionId']"
+                        }
+                    },
+                    "path": "/subscriptions/@{encodeURIComponent('[INSERT_YOUR_SUBSCRIPTION_ID]')}/providers/@{encodeURIComponent('Microsoft.EventGrid.Topics')}/resource/eventSubscriptions",
+                    "queries": {
+                        "x-ms-api-version": "2017-09-15-preview"
+                    }
+                },
+                "splitOn": "@triggerBody()",
+                "type": "ApiConnectionWebhook"
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {
+                "azureeventgrid": {
+                    "connectionId": "[/subscriptions/[INSERT_YOUR_SUBSCRIPTION_ID]/resourceGroups/[INSERT_YOUR_RESOURCE_GROUP_NAME]/providers/Microsoft.Web/connections/[INSERT_YOUR_EVENT_GRID_CONNECTION_NAME]",
+                    "connectionName": "[INSERT_YOUR_EVENT_GRID_CONNECTION_NAME]",
+                    "id": "/subscriptions/[INSERT_YOUR_SUBSCRIPTION_ID]/providers/Microsoft.Web/locations/westeurope/managedApis/[INSERT_YOUR_EVENT_GRID_CONNECTION_NAME]"
+                },
+                "sendgrid": {
+                    "connectionId": "/subscriptions/[INSERT_YOUR_SUBSCRIPTION_ID]/resourceGroups/[INSERT_YOUR_RESOURCE_GROUP_NAME]/providers/Microsoft.Web/connections/[INSERT_YOUR_SEND_GRID_CONNECTION_NAME]",
+                    "connectionName": "[INSERT_YOUR_SEND_GRID_CONNECTION_NAME]",
+                    "id": "/subscriptions/[INSERT_YOUR_SUBSCRIPTION_ID]/providers/Microsoft.Web/locations/westeurope/managedApis/[INSERT_YOUR_SEND_GRID_CONNECTION_NAME]"
+                }
+            }
+        }
+    }
+}

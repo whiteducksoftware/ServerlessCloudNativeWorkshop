@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "co2": {
+            "type": "integer"
+        },
+        "humidity": {
+            "type": "integer"
+        },
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "temperature": {
+            "type": "number"
+        },
+        "time": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "time",
+        "temperature",
+        "co2",
+        "humidity"
+    ],
+    "type": "object"
+}

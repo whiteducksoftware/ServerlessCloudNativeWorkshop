@@ -1,0 +1,18 @@
+{
+  "bindings": [
+    {
+      "type": "eventGridTrigger",
+      "name": "eventGridEvent",
+      "direction": "in"
+    },
+    {
+      "name": "cosmos",
+      "type": "cosmosDB",
+      "databaseName": "devopenspace",
+      "collectionName": "weather",
+      "createIfNotExists": false,
+      "connectionStringSetting": "CosmosDb",
+      "direction": "out"
+    }
+  ]
+}
