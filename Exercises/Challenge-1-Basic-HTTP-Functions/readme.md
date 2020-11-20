@@ -18,7 +18,7 @@ You should write a function that can be called via HTTP and that retrieves the l
 
 Über diesen Endpoint könnt ihr die aktuellen Messwerte abfragen:
 
-`https://f50fde8bbb1ea0874e23b254e6e2ba44.m.pipedream.net`
+`https://emulatorfunctionapp98f3eeca.azurewebsites.net/api/getstationdata?device_Id=70:ee:50:1b:26:ac&code=K3fQDcXMFOSPKGV1DM8JCzvmtyQtx6C4CG4Ba6Xe1rpN9higlU5S3Q==`
 
 ## 💡 Success Criteria
 
