@@ -225,8 +225,8 @@ We also use VSCode to provide the function in Azure. It describes very well how 
 
 ## Test with Postman or cURL
 
-If your Function Project has been started successfully, you can test your function with the following CURL command or via Postman. Do not forget to pass the DeviceID.
+If your Function Project has been started successfully, you can test your function with the following CURL command or via Postman. 
 
 ```bash
-curl --location --request GET 'http://localhost:8001/api/GetMeasurementsFunction?device_id=70:ee:50:1b:26:ac'
+curl --location --request GET 'http://localhost:8001/api/GetMeasurementsFunction'
 ```
