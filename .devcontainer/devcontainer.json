@@ -21,7 +21,8 @@
 		"ms-vscode.azurecli",
 		"davidanson.vscode-markdownlint",
 		"Azurite.azurite",
-		"ms-dotnettools.csharp"
+		"ms-dotnettools.csharp",
+		"ms-azuretools.vscode-azurefunctions"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
